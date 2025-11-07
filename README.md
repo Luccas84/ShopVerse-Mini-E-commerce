@@ -4,7 +4,7 @@
 
 Bem-vindo ao meu projeto!
 
-![Logo do Projeto](https://github.com/Luccas84/Sistema-de-Agendamentos/blob/main/Projeto_17.png)
+![Logo do Projeto](https://github.com/Luccas84/ShopVerse-Mini-E-commerce/blob/main/Projeto_18.png)
 
 **Um e-commerce completo e profissional, inspirado no Mercado Livre e Tray, com design moderno, responsivo e focado em conversão.**
 
