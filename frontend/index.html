@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopVerse - Sua Loja Online</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <button id="menuToggle" class="menu-toggle">
+        <i class='bx bx-menu'></i>
+      </button>
+      
+      <a href="index.html" class="logo">
+        <i class='bx bxs-shopping-bag'></i>
+        <span>ShopVerse</span>
+      </a>
+      
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li class="categorias-dropdown">
+            <button id="categoriasDropdownBtn" class="categorias-dropdown-btn">
+              Categorias <i class='bx bx-chevron-down'></i>
+            </button>
+            <div id="categoriasDropdownMenu" class="categorias-dropdown-menu"></div>
+          </li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li id="linkDashboard" style="display: none;"><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+      </nav>
+      
+      <div class="header-actions">
+        <div class="busca-container">
+          <i class='bx bx-search busca-icon'></i>
+          <input type="text" class="busca-input" placeholder="Buscar produtos..." id="buscaHeader">
+        </div>
+        
+        <button class="btn-carrinho" onclick="window.location.href='carrinho.html'">
+          <i class='bx bx-cart'></i>
+          <span class="carrinho-badge" id="carrinhoBadge">0</span>
+        </button>
+        
+        <span id="usuarioInfo" style="display: none; margin-right: 1rem;"></span>
+        <button id="btnLogin" class="btn btn-secundario" onclick="abrirModalLogin()">Login</button>
+        <button id="btnLogout" class="btn btn-secundario" onclick="fazerLogout()" style="display: none;">Sair</button>
+      </div>
+    </div>
+    
+    <!-- Mobile Navigation -->
+    <div id="mobileNav" class="mobile-nav">
+      <ul class="mobile-nav-menu">
+        <li><a href="index.html"><i class='bx bx-home'></i> Home</a></li>
+        <li><a href="produtos.html"><i class='bx bx-package'></i> Produtos</a></li>
+        <li id="mobileLinkDashboard" style="display: none;">
+          <a href="dashboard.html"><i class='bx bx-bar-chart-square'></i> Dashboard</a>
+        </li>
+      </ul>
+      <div class="mobile-nav-actions">
+        <button class="btn btn-primario" style="width: 100%;" onclick="abrirModalLogin(); fecharMobileMenu();">
+          <i class='bx bx-log-in'></i> Login
+        </button>
+        <button id="mobileBtnLogout" class="btn btn-secundario" style="width: 100%; display: none;" onclick="fazerLogout();">
+          <i class='bx bx-log-out'></i> Sair
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-slide active">
+      <div class="hero-content">
+        <h1 class="hero-title">Bem-vindo à ShopVerse</h1>
+        <p class="hero-subtitle">Sua loja online com os melhores produtos em um só lugar</p>
+        <div class="hero-cta">
+          <a href="produtos.html" class="btn btn-hero btn-primario">
+            <i class='bx bx-shopping-bag'></i> Explorar Produtos
+          </a>
+          <a href="produtos.html" class="btn btn-hero btn-secundario-hero">
+            <i class='bx bx-info-circle'></i> Saiba Mais
+          </a>
+        </div>
+      </div>
+      <div class="hero-badge">
+        <i class='bx bx-gift'></i>
+        <span>Frete Grátis em compras acima de R$ 199</span>
+      </div>
+    </div>
+    <div class="hero-slide">
+      <div class="hero-content">
+        <h1 class="hero-title">Ofertas Especiais</h1>
+        <p class="hero-subtitle">Descontos incríveis de até 50% OFF em produtos selecionados</p>
+        <div class="hero-cta">
+          <a href="produtos.html" class="btn btn-hero btn-primario">
+            <i class='bx bx-tag'></i> Ver Ofertas
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-slide">
+      <div class="hero-content">
+        <h1 class="hero-title">Novidades Chegaram!</h1>
+        <p class="hero-subtitle">Confira nossa seleção de produtos exclusivos</p>
+        <div class="hero-cta">
+          <a href="produtos.html" class="btn btn-hero btn-primario">
+            <i class='bx bx-star'></i> Ver Novidades
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-nav">
+      <button class="hero-nav-btn active" onclick="mudarSlide(0)"></button>
+      <button class="hero-nav-btn" onclick="mudarSlide(1)"></button>
+      <button class="hero-nav-btn" onclick="mudarSlide(2)"></button>
+    </div>
+  </section>
+
+  <!-- Categorias Destaque -->
+  <section class="categorias-section">
+    <div class="container">
+      <h2 class="section-title">Navegue por Categorias</h2>
+      <div class="categorias-grid" id="categoriasGrid">
+        <!-- Categorias serão carregadas aqui -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Produtos em Destaque -->
+  <section class="produtos-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Produtos em Destaque</h2>
+        <a href="produtos.html" class="section-link">Ver Todos <i class='bx bx-right-arrow-alt'></i></a>
+      </div>
+      <div class="produtos-grid" id="produtosGrid">
+        <!-- Produtos serão carregados aqui -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefícios/Diferenciais -->
+  <section class="beneficios-section">
+    <div class="container">
+      <h2 class="section-title">Por que escolher a ShopVerse?</h2>
+      <div class="beneficios-grid">
+        <div class="beneficio-card">
+          <div class="beneficio-icon">
+            <i class='bx bx-package'></i>
+          </div>
+          <h3>Frete Grátis</h3>
+          <p>Em compras acima de R$ 199,90 para todo o Brasil</p>
+        </div>
+        <div class="beneficio-card">
+          <div class="beneficio-icon">
+            <i class='bx bx-refresh'></i>
+          </div>
+          <h3>Troca Fácil</h3>
+          <p>Até 30 dias para trocar ou devolver sua compra</p>
+        </div>
+        <div class="beneficio-card">
+          <div class="beneficio-icon">
+            <i class='bx bx-support'></i>
+          </div>
+          <h3>Suporte 24h</h3>
+          <p>Atendimento especializado disponível 24 horas por dia</p>
+        </div>
+        <div class="beneficio-card">
+          <div class="beneficio-icon">
+            <i class='bx bx-shield-quarter'></i>
+          </div>
+          <h3>Garantia Total</h3>
+          <p>Produtos com garantia oficial e seguro de qualidade</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Prova Social/Testemunhos -->
+  <section class="testemunhos-section">
+    <div class="container">
+      <h2 class="section-title">O que nossos clientes dizem</h2>
+      <div class="testemunhos-carrossel">
+        <div class="testemunho-card">
+          <div class="testemunho-stars">
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+          </div>
+          <p class="testemunho-texto">"Excelente experiência de compra! Produtos de qualidade e entrega super rápida."</p>
+          <div class="testemunho-autor">
+            <div class="testemunho-avatar">M</div>
+            <div>
+              <strong>Maria Silva</strong>
+              <span>Cliente Verificado</span>
+            </div>
+          </div>
+        </div>
+        <div class="testemunho-card">
+          <div class="testemunho-stars">
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+          </div>
+          <p class="testemunho-texto">"Melhor loja online! Preços justos e atendimento impecável. Recomendo!"</p>
+          <div class="testemunho-autor">
+            <div class="testemunho-avatar">J</div>
+            <div>
+              <strong>João Santos</strong>
+              <span>Cliente Verificado</span>
+            </div>
+          </div>
+        </div>
+        <div class="testemunho-card">
+          <div class="testemunho-stars">
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+            <i class='bx bxs-star'></i>
+          </div>
+          <p class="testemunho-texto">"Produtos chegando antes do prazo e exatamente como descrito. Parabéns!"</p>
+          <div class="testemunho-autor">
+            <div class="testemunho-avatar">A</div>
+            <div>
+              <strong>Ana Costa</strong>
+              <span>Cliente Verificado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter-section">
+    <div class="container">
+      <div class="newsletter-content">
+        <div class="newsletter-text">
+          <h2>Assine nossa Newsletter</h2>
+          <p>Receba ofertas exclusivas e ganhe <strong>10% OFF</strong> na primeira compra!</p>
+        </div>
+        <form class="newsletter-form" id="newsletterForm">
+          <input type="email" placeholder="Seu melhor e-mail" required>
+          <button type="submit" class="btn btn-primario">
+            <i class='bx bx-envelope'></i> Assinar
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal Login -->
+  <div id="modalLogin" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Login</h2>
+        <button class="btn-fechar" id="fecharLogin">&times;</button>
+      </div>
+      <form id="formLogin">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="loginSenha">Senha</label>
+          <input type="password" id="loginSenha" required>
+        </div>
+        <div class="erro-mensagem" id="loginErro"></div>
+        <button type="submit" class="btn btn-primario" style="width: 100%;">Entrar</button>
+        <p style="text-align: center; margin-top: 1rem;">
+          Não tem conta? <a href="#" onclick="event.preventDefault(); fecharModalLogin(); abrirModalCadastro();" style="color: var(--cor-secundaria);">Cadastre-se</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Cadastro -->
+  <div id="modalCadastro" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Cadastro</h2>
+        <button class="btn-fechar" id="fecharCadastro">&times;</button>
+      </div>
+      <form id="formCadastro">
+        <div class="form-group">
+          <label for="cadastroNome">Nome</label>
+          <input type="text" id="cadastroNome" required>
+        </div>
+        <div class="form-group">
+          <label for="cadastroEmail">Email</label>
+          <input type="email" id="cadastroEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="cadastroSenha">Senha</label>
+          <input type="password" id="cadastroSenha" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="cadastroConfirmarSenha">Confirmar Senha</label>
+          <input type="password" id="cadastroConfirmarSenha" required>
+        </div>
+        <div class="erro-mensagem" id="cadastroErro"></div>
+        <button type="submit" class="btn btn-primario" style="width: 100%;">Cadastrar</button>
+        <p style="text-align: center; margin-top: 1rem;">
+          Já tem conta? <a href="#" onclick="event.preventDefault(); fecharModalCadastro(); abrirModalLogin();" style="color: var(--cor-secundaria);">Fazer Login</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>ShopVerse</h3>
+        <p>Sua loja online favorita com os melhores produtos em um só lugar.</p>
+        <div class="footer-social">
+          <a href="#" title="Facebook"><i class='bx bxl-facebook'></i></a>
+          <a href="#" title="Instagram"><i class='bx bxl-instagram'></i></a>
+          <a href="#" title="Twitter"><i class='bx bxl-twitter'></i></a>
+          <a href="#" title="LinkedIn"><i class='bx bxl-linkedin'></i></a>
+        </div>
+      </div>
+      <div class="footer-section">
+        <h3>Links Rápidos</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="carrinho.html">Carrinho</a></li>
+          <li><a href="checkout.html">Checkout</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Institucional</h3>
+        <ul>
+          <li><a href="#">Sobre Nós</a></li>
+          <li><a href="#">Política de Privacidade</a></li>
+          <li><a href="#">Termos de Uso</a></li>
+          <li><a href="#">Trocas e Devoluções</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Contato</h3>
+        <ul>
+          <li><i class='bx bx-envelope'></i> contato@shopverse.com</li>
+          <li><i class='bx bx-phone'></i> (11) 9999-9999</li>
+          <li><i class='bx bx-time'></i> Seg-Sex: 9h às 18h</li>
+          <li><i class='bx bx-map'></i> São Paulo, SP</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-pagamentos">
+        <h4>Formas de Pagamento</h4>
+        <div class="pagamentos-icons">
+          <i class='bx bxl-visa' title="Visa"></i>
+          <i class='bx bxl-mastercard' title="Mastercard"></i>
+          <i class='bx bxl-paypal' title="PayPal"></i>
+          <i class='bx bx-credit-card' title="Outros Cartões"></i>
+          <i class='bx bxl-pix' title="PIX"></i>
+        </div>
+      </div>
+      <p>&copy; 2024 ShopVerse. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Menu Flutuante Admin -->
+  <button id="adminFloatTrigger" class="admin-float-trigger" style="display: none;">
+    <i class='bx bx-cog'></i>
+    <span class="badge" style="display: none;">0</span>
+  </button>
+  
+  <div id="adminFloatMenu" class="admin-float-menu">
+    <div class="admin-float-menu-header">
+      <i class='bx bx-shield-quarter'></i>
+      <h3>Painel Admin</h3>
+    </div>
+    <div class="admin-float-menu-items">
+      <a href="dashboard.html" class="admin-float-menu-item">
+        <i class='bx bx-bar-chart-square'></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="produtos-admin.html" class="admin-float-menu-item">
+        <i class='bx bx-package'></i>
+        <span>Produtos</span>
+      </a>
+      <a href="categorias-admin.html" class="admin-float-menu-item">
+        <i class='bx bx-category'></i>
+        <span>Categorias</span>
+      </a>
+      <a href="pedidos-admin.html" class="admin-float-menu-item">
+        <i class='bx bx-cart'></i>
+        <span>Pedidos</span>
+      </a>
+      <a href="#" class="admin-float-menu-item logout" onclick="fazerLogout(); return false;">
+        <i class='bx bx-log-out'></i>
+        <span>Sair</span>
+      </a>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/cadastro.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script src="js/categorias-menu.js"></script>
+  <script src="js/admin-menu.js"></script>
+  <script src="js/mobile-menu.js"></script>
+  <script>
+    // Inicializar menu de categorias
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', inicializarCategoriasMenu);
+    } else {
+      inicializarCategoriasMenu();
+    }
+  </script>
+  <script>
+    // Carregar produtos em destaque
+    async function carregarProdutosDestaque() {
+      try {
+        const produtos = await api.produtos.listar({ limit: '8' });
+        const grid = document.getElementById('produtosGrid');
+        
+        if (produtos.length === 0) {
+          grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Nenhum produto encontrado.</p>';
+          return;
+        }
+        
+        grid.innerHTML = produtos.map(produto => {
+          // Calcular desconto fictício (10-30% aleatório)
+          const desconto = Math.floor(Math.random() * 20) + 10;
+          const precoOriginal = produto.preco / (1 - desconto / 100);
+          const mostrarDesconto = Math.random() > 0.5; // 50% chance de mostrar desconto
+          
+          return `
+          <div class="produto-card" onclick="window.location.href='produto.html?id=${produto.id}'">
+            ${mostrarDesconto ? `<div class="produto-badge">-${desconto}%</div>` : ''}
+            <img src="${produto.imagem}" alt="${produto.nome}" class="produto-imagem">
+            <div class="produto-info">
+              <div class="produto-categoria">${produto.categoria.nome}</div>
+              <h3 class="produto-nome">${produto.nome}</h3>
+              <div class="produto-preco-container-home">
+                ${mostrarDesconto ? `
+                  <div class="produto-preco-antigo-home">${formatarPreco(precoOriginal)}</div>
+                ` : ''}
+                <div class="produto-preco">${formatarPreco(produto.preco)}</div>
+              </div>
+              ${produto.mediaAvaliacoes > 0 ? `
+                <div class="produto-avaliacao">
+                  ${obterEstrelasHTML(produto.mediaAvaliacoes)}
+                  <span>(${produto.totalAvaliacoes})</span>
+                </div>
+              ` : ''}
+              <button class="btn-adicionar-carrinho" onclick="event.stopPropagation(); adicionarAoCarrinho(${produto.id})">
+                <i class='bx bx-cart'></i> Adicionar ao Carrinho
+              </button>
+            </div>
+          </div>
+        `;
+        }).join('');
+      } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
+      }
+    }
+
+    // Busca no header
+    const buscaHeader = document.getElementById('buscaHeader');
+    if (buscaHeader) {
+      buscaHeader.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const termo = buscaHeader.value;
+          if (termo) {
+            window.location.href = `produtos.html?busca=${encodeURIComponent(termo)}`;
+          }
+        }
+      });
+    }
+
+    // Carregar categorias
+    async function carregarCategoriasHome() {
+      try {
+        const categorias = await api.categorias.listar();
+        const grid = document.getElementById('categoriasGrid');
+        
+        if (!grid || categorias.length === 0) return;
+        
+        // Mostrar apenas as primeiras 6 categorias
+        const categoriasLimitadas = categorias.slice(0, 6);
+        
+        grid.innerHTML = categoriasLimitadas.map(categoria => `
+          <a href="produtos.html?categoria=${categoria.id}" class="categoria-card-home">
+            <div class="categoria-icon">
+              <i class='bx bx-category'></i>
+            </div>
+            <h3>${categoria.nome}</h3>
+            <p>Ver produtos</p>
+          </a>
+        `).join('');
+      } catch (error) {
+        console.error('Erro ao carregar categorias:', error);
+      }
+    }
+
+    // Carrossel Hero
+    let slideAtual = 0;
+    const heroSlides = document.querySelectorAll('.hero-slide');
+    const heroNavBtns = document.querySelectorAll('.hero-nav-btn');
+    
+    function mudarSlide(index) {
+      heroSlides[slideAtual].classList.remove('active');
+      heroNavBtns[slideAtual].classList.remove('active');
+      
+      slideAtual = index;
+      
+      heroSlides[slideAtual].classList.add('active');
+      heroNavBtns[slideAtual].classList.add('active');
+    }
+    
+    function proximoSlide() {
+      const proximo = (slideAtual + 1) % heroSlides.length;
+      mudarSlide(proximo);
+    }
+    
+    if (heroSlides.length > 0) {
+      setInterval(proximoSlide, 5000);
+      
+      // Adicionar evento de clique nos botões
+      heroNavBtns.forEach((btn, index) => {
+        btn.addEventListener('click', () => mudarSlide(index));
+      });
+    }
+
+    // Newsletter
+    const newsletterForm = document.getElementById('newsletterForm');
+    if (newsletterForm) {
+      newsletterForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = newsletterForm.querySelector('input[type="email"]').value;
+        mostrarToast('Obrigado por se inscrever! Verifique seu e-mail.', 'sucesso');
+        newsletterForm.reset();
+      });
+    }
+
+    // Carregar dados
+    carregarProdutosDestaque();
+    carregarCategoriasHome();
+    atualizarCarrinhoBadge();
+    
+    // Exportar função para uso global
+    window.mudarSlide = mudarSlide;
+  </script>
+</body>
+</html>
+
+

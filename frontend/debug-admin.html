@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug Admin - ShopVerse</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .info-box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .info-box h2 {
+      margin-top: 0;
+      color: #1a1f36;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+    .status.ok {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+    button {
+      background: #f26b38;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background: #d85a2a;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Debug - Status do Admin</h1>
+  
+  <div class="info-box">
+    <h2>Informações do Usuário</h2>
+    <div id="userInfo"></div>
+  </div>
+  
+  <div class="info-box">
+    <h2>Ações</h2>
+    <button onclick="verificarStatus()">Verificar Status</button>
+    <button onclick="limparDados()">Limpar Dados e Sair</button>
+    <button onclick="atualizarInterface()">Forçar Atualização do Menu</button>
+  </div>
+  
+  <div class="info-box">
+    <h2>Como Acessar o Dashboard</h2>
+    <ol>
+      <li>Certifique-se de ter criado um usuário admin:
+        <code>cd backend && node scripts/criar-admin.js</code>
+      </li>
+      <li>Faça login com esse usuário</li>
+      <li>O link "Dashboard" deve aparecer no menu</li>
+      <li>Ou acesse diretamente: <code>http://localhost:8080/dashboard.html</code></li>
+    </ol>
+  </div>
+
+  <script>
+    function verificarStatus() {
+      const token = localStorage.getItem('token');
+      const usuarioStr = localStorage.getItem('usuario');
+      
+      let html = '';
+      
+      if (!token) {
+        html += '<div class="status error">❌ Você NÃO está logado</div>';
+        html += '<p>Faça login primeiro.</p>';
+      } else {
+        html += '<div class="status ok">✅ Token encontrado no localStorage</div>';
+        
+        if (!usuarioStr) {
+          html += '<div class="status error">❌ Dados do usuário não encontrados</div>';
+        } else {
+          try {
+            const usuario = JSON.parse(usuarioStr);
+            html += '<div class="status ok">✅ Dados do usuário encontrados</div>';
+            html += '<pre style="background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto;">';
+            html += JSON.stringify(usuario, null, 2);
+            html += '</pre>';
+            
+            if (usuario.admin === true) {
+              html += '<div class="status ok">✅ Você É ADMINISTRADOR</div>';
+              html += '<p>O link "Dashboard" deve aparecer no menu.</p>';
+            } else {
+              html += '<div class="status error">❌ Você NÃO é administrador</div>';
+              html += '<p>Você precisa fazer login com uma conta de administrador.</p>';
+              html += '<p>Para criar um admin: <code>cd backend && node scripts/criar-admin.js</code></p>';
+            }
+          } catch (e) {
+            html += '<div class="status error">❌ Erro ao ler dados do usuário: ' + e.message + '</div>';
+          }
+        }
+      }
+      
+      document.getElementById('userInfo').innerHTML = html;
+    }
+    
+    function limparDados() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      alert('Dados limpos! Você foi deslogado.');
+      verificarStatus();
+    }
+    
+    function atualizarInterface() {
+      // Função para atualizar menu em qualquer página
+      const { autenticado, usuario } = verificarAutenticacao();
+      const linkDashboard = document.getElementById('linkDashboard');
+      
+      if (linkDashboard) {
+        if (autenticado && usuario && usuario.admin) {
+          linkDashboard.style.display = 'inline-block';
+          alert('✅ Menu atualizado! O link Dashboard deve aparecer agora.');
+        } else {
+          linkDashboard.style.display = 'none';
+          alert('❌ Você não é administrador ou não está logado.');
+        }
+      } else {
+        alert('Link do Dashboard não encontrado nesta página. Vá para index.html ou produtos.html');
+      }
+    }
+    
+    function verificarAutenticacao() {
+      const token = localStorage.getItem('token');
+      const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+      return { autenticado: !!token, usuario };
+    }
+    
+    // Verificar ao carregar
+    verificarStatus();
+  </script>
+</body>
+</html>
+
+

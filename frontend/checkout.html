@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - ShopVerse</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <style>
+    .checkout-container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .checkout-container {
+        padding: 0 1rem;
+      }
+      
+      .checkout-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .checkout-section {
+        padding: 1.5rem;
+      }
+      
+      .checkout-section h3 {
+        font-size: 1.3rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .checkout-section {
+        padding: 1rem;
+      }
+      
+      .form-group input,
+      .form-group select {
+        font-size: 16px; /* Evita zoom no iOS */
+      }
+      
+      .btn-pagamento {
+        padding: 1rem;
+        font-size: 1rem;
+      }
+    }
+    .checkout-section {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: var(--sombra);
+      margin-bottom: 2rem;
+    }
+    .checkout-section h3 {
+      font-family: var(--fonte-titulo);
+      margin-bottom: 1.5rem;
+      color: var(--cor-primaria);
+    }
+    .resumo-pedido-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--cor-borda);
+    }
+    .resumo-pedido-item:last-child {
+      border-bottom: none;
+    }
+    .btn-pagamento {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 1.1rem;
+    }
+    @media (max-width: 768px) {
+      .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <i class='bx bxs-shopping-bag'></i>
+        <span>ShopVerse</span>
+      </a>
+      
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+        </ul>
+      </nav>
+      
+      <div class="header-actions">
+        <button class="btn-carrinho" onclick="window.location.href='carrinho.html'">
+          <i class='bx bx-cart'></i>
+          <span class="carrinho-badge" id="carrinhoBadge">0</span>
+        </button>
+        <span id="usuarioInfo" style="display: none; margin-right: 1rem;"></span>
+        <button id="btnLogout" class="btn btn-secundario" onclick="fazerLogout()" style="display: none;">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Checkout -->
+  <div class="checkout-container">
+    <h1 style="font-family: var(--fonte-titulo); text-align: center; margin: 2rem 0;">Finalizar Compra</h1>
+    
+    <div class="checkout-grid">
+      <div>
+        <div class="checkout-section">
+          <h3>Forma de Pagamento</h3>
+          <div class="form-group">
+            <label>
+              <input type="radio" name="pagamento" value="cartao" checked style="margin-right: 0.5rem;">
+              Cartão de Crédito
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="radio" name="pagamento" value="pix" style="margin-right: 0.5rem;">
+              PIX
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="radio" name="pagamento" value="boleto" style="margin-right: 0.5rem;">
+              Boleto
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <div class="checkout-section">
+          <h3>Resumo do Pedido</h3>
+          <div id="resumoPedido"></div>
+          
+          <div class="resumo-linha resumo-total">
+            <span>Total:</span>
+            <span id="totalPedido">R$ 0,00</span>
+          </div>
+          
+          <button class="btn btn-primario btn-pagamento" onclick="finalizarPedido()">
+            <i class='bx bx-check'></i> Confirmar Pedido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script>
+    // Verificar autenticação
+    const { autenticado } = verificarAutenticacao();
+    
+    if (!autenticado) {
+      mostrarToast('Faça login para finalizar a compra', 'aviso');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 2000);
+    }
+
+    function renderizarResumo() {
+      const carrinho = obterCarrinho();
+      const container = document.getElementById('resumoPedido');
+      const total = calcularTotalCarrinho();
+      
+      if (carrinho.length === 0) {
+        mostrarToast('Carrinho vazio. Redirecionando...', 'aviso');
+        setTimeout(() => {
+          window.location.href = 'carrinho.html';
+        }, 2000);
+        return;
+      }
+      
+      container.innerHTML = carrinho.map(item => `
+        <div class="resumo-pedido-item">
+          <div>
+            <strong>${item.nome}</strong><br>
+            <small>Qtd: ${item.quantidade}</small>
+          </div>
+          <span>${formatarPreco(item.preco * item.quantidade)}</span>
+        </div>
+      `).join('');
+      
+      document.getElementById('totalPedido').textContent = formatarPreco(total);
+    }
+
+    async function finalizarPedido() {
+      const carrinho = obterCarrinho();
+      
+      if (carrinho.length === 0) {
+        mostrarToast('Carrinho vazio', 'erro');
+        return;
+      }
+      
+      const formaPagamento = document.querySelector('input[name="pagamento"]:checked').value;
+      
+      try {
+        // Criar pedido
+        const itens = carrinho.map(item => ({
+          produtoId: item.produtoId,
+          quantidade: item.quantidade
+        }));
+        
+        const pedido = await api.pedidos.criar({ itens });
+        
+        mostrarToast('Pedido realizado com sucesso!', 'sucesso');
+        
+        // Limpar carrinho
+        limparCarrinho();
+        
+        // Redirecionar para home após 2 segundos
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+        
+      } catch (error) {
+        console.error('Erro ao finalizar pedido:', error);
+        mostrarToast(error.message || 'Erro ao finalizar pedido', 'erro');
+      }
+    }
+
+    // Carregar resumo
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', renderizarResumo);
+    } else {
+      renderizarResumo();
+    }
+  </script>
+</body>
+</html>
+
+

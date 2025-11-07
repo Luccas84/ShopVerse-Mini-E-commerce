@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produtos - ShopVerse</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <style>
+    .filtros-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filtro-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filtro-select {
+      padding: 0.8rem;
+      border: 2px solid var(--cor-borda);
+      border-radius: 5px;
+      font-family: var(--fonte-texto);
+      background: white;
+      cursor: pointer;
+    }
+    .filtro-select:focus {
+      outline: none;
+      border-color: var(--cor-secundaria);
+    }
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      font-size: 1.2rem;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <button id="menuToggle" class="menu-toggle">
+        <i class='bx bx-menu'></i>
+      </button>
+      
+      <a href="index.html" class="logo">
+        <i class='bx bxs-shopping-bag'></i>
+        <span>ShopVerse</span>
+      </a>
+      
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li class="categorias-dropdown">
+            <button id="categoriasDropdownBtn" class="categorias-dropdown-btn">
+              Categorias <i class='bx bx-chevron-down'></i>
+            </button>
+            <div id="categoriasDropdownMenu" class="categorias-dropdown-menu"></div>
+          </li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li id="linkDashboard" style="display: none;"><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+      </nav>
+      
+      <div class="header-actions">
+        <div class="busca-container">
+          <i class='bx bx-search busca-icon'></i>
+          <input type="text" class="busca-input" placeholder="Buscar produtos..." id="buscaHeader">
+        </div>
+        
+        <button class="btn-carrinho" onclick="window.location.href='carrinho.html'">
+          <i class='bx bx-cart'></i>
+          <span class="carrinho-badge" id="carrinhoBadge">0</span>
+        </button>
+        
+        <span id="usuarioInfo" style="display: none; margin-right: 1rem;"></span>
+        <button id="btnLogin" class="btn btn-secundario" onclick="abrirModalLogin()">Login</button>
+        <button id="btnLogout" class="btn btn-secundario" onclick="fazerLogout()" style="display: none;">Sair</button>
+      </div>
+    </div>
+    
+    <!-- Mobile Navigation -->
+    <div id="mobileNav" class="mobile-nav">
+      <ul class="mobile-nav-menu">
+        <li><a href="index.html"><i class='bx bx-home'></i> Home</a></li>
+        <li><a href="produtos.html"><i class='bx bx-package'></i> Produtos</a></li>
+        <li id="mobileLinkDashboard" style="display: none;">
+          <a href="dashboard.html"><i class='bx bx-bar-chart-square'></i> Dashboard</a>
+        </li>
+      </ul>
+      <div class="mobile-nav-actions">
+        <button class="btn btn-primario" style="width: 100%;" onclick="abrirModalLogin(); fecharMobileMenu();">
+          <i class='bx bx-log-in'></i> Login
+        </button>
+        <button id="mobileBtnLogout" class="btn btn-secundario" style="width: 100%; display: none;" onclick="fazerLogout();">
+          <i class='bx bx-log-out'></i> Sair
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filtros -->
+  <div class="filtros-container">
+    <div class="filtro-group">
+      <label for="filtroCategoria"><strong>Categoria:</strong></label>
+      <select id="filtroCategoria" class="filtro-select">
+        <option value="">Todas</option>
+      </select>
+      
+      <label for="ordenacao"><strong>Ordenar por:</strong></label>
+      <select id="ordenacao" class="filtro-select">
+        <option value="recente">Mais Recentes</option>
+        <option value="preco-asc">Menor Preço</option>
+        <option value="preco-desc">Maior Preço</option>
+        <option value="nome">Nome A-Z</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Produtos -->
+  <section class="produtos-section">
+    <div id="loading" class="loading">Carregando produtos...</div>
+    <div class="produtos-grid" id="produtosGrid" style="display: none;">
+      <!-- Produtos serão carregados aqui -->
+    </div>
+    <div id="semResultados" style="display: none; text-align: center; padding: 3rem;">
+      <p style="font-size: 1.2rem; color: #999;">Nenhum produto encontrado.</p>
+    </div>
+  </section>
+
+  <!-- Modal Login (mesmo do index.html) -->
+  <div id="modalLogin" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Login</h2>
+        <button class="btn-fechar" id="fecharLogin">&times;</button>
+      </div>
+      <form id="formLogin">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="loginSenha">Senha</label>
+          <input type="password" id="loginSenha" required>
+        </div>
+        <div class="erro-mensagem" id="loginErro"></div>
+        <button type="submit" class="btn btn-primario" style="width: 100%;">Entrar</button>
+        <p style="text-align: center; margin-top: 1rem;">
+          Não tem conta? <a href="#" onclick="event.preventDefault(); fecharModalLogin(); abrirModalCadastro();" style="color: var(--cor-secundaria);">Cadastre-se</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <div id="modalCadastro" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Cadastro</h2>
+        <button class="btn-fechar" id="fecharCadastro">&times;</button>
+      </div>
+      <form id="formCadastro">
+        <div class="form-group">
+          <label for="cadastroNome">Nome</label>
+          <input type="text" id="cadastroNome" required>
+        </div>
+        <div class="form-group">
+          <label for="cadastroEmail">Email</label>
+          <input type="email" id="cadastroEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="cadastroSenha">Senha</label>
+          <input type="password" id="cadastroSenha" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="cadastroConfirmarSenha">Confirmar Senha</label>
+          <input type="password" id="cadastroConfirmarSenha" required>
+        </div>
+        <div class="erro-mensagem" id="cadastroErro"></div>
+        <button type="submit" class="btn btn-primario" style="width: 100%;">Cadastrar</button>
+        <p style="text-align: center; margin-top: 1rem;">
+          Já tem conta? <a href="#" onclick="event.preventDefault(); fecharModalCadastro(); abrirModalLogin();" style="color: var(--cor-secundaria);">Fazer Login</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Menu Flutuante Admin -->
+  <button id="adminFloatTrigger" class="admin-float-trigger" style="display: none;">
+    <i class='bx bx-cog'></i>
+    <span class="badge" style="display: none;">0</span>
+  </button>
+  
+  <div id="adminFloatMenu" class="admin-float-menu">
+    <div class="admin-float-menu-header">
+      <i class='bx bx-shield-quarter'></i>
+      <h3>Painel Admin</h3>
+    </div>
+    <div class="admin-float-menu-items">
+      <a href="dashboard.html" class="admin-float-menu-item">
+        <i class='bx bx-bar-chart-square'></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="produtos-admin.html" class="admin-float-menu-item">
+        <i class='bx bx-package'></i>
+        <span>Produtos</span>
+      </a>
+      <a href="categorias-admin.html" class="admin-float-menu-item">
+        <i class='bx bx-category'></i>
+        <span>Categorias</span>
+      </a>
+      <a href="pedidos-admin.html" class="admin-float-menu-item">
+        <i class='bx bx-cart'></i>
+        <span>Pedidos</span>
+      </a>
+      <a href="#" class="admin-float-menu-item logout" onclick="fazerLogout(); return false;">
+        <i class='bx bx-log-out'></i>
+        <span>Sair</span>
+      </a>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/cadastro.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script src="js/produtos.js"></script>
+  <script src="js/categorias-menu.js"></script>
+  <script src="js/admin-menu.js"></script>
+  <script src="js/mobile-menu.js"></script>
+  <script>
+    // Inicializar menu de categorias
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', inicializarCategoriasMenu);
+    } else {
+      inicializarCategoriasMenu();
+    }
+  </script>
+</body>
+</html>
+
+

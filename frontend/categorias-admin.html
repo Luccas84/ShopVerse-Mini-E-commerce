@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciar Categorias - ShopVerse</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <i class='bx bxs-shopping-bag'></i>
+        <span>ShopVerse</span>
+      </a>
+      
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+      </nav>
+      
+      <div class="header-actions">
+        <span id="usuarioInfo"></span>
+        <button id="btnLogout" class="btn btn-secundario" onclick="fazerLogout()">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Gerenciar Categorias -->
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h1>Gerenciar Categorias</h1>
+      <button class="btn btn-primario" onclick="abrirModalCategoria()">
+        <i class='bx bx-plus'></i> Nova Categoria
+      </button>
+    </div>
+
+    <div class="dashboard-section">
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Produtos</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="categoriasTable">
+            <!-- Dados serão preenchidos via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Categoria -->
+  <div id="modalCategoria" class="form-modal">
+    <div class="form-modal-content">
+      <div class="modal-header">
+        <h2 id="modalCategoriaTitulo">Nova Categoria</h2>
+        <button class="btn-fechar" onclick="fecharModalCategoria()">&times;</button>
+      </div>
+      <form id="formCategoria">
+        <input type="hidden" id="categoriaId">
+        
+        <div class="form-group">
+          <label>Nome</label>
+          <input type="text" id="categoriaNome" required>
+        </div>
+        
+        <div class="erro-mensagem" id="categoriaErro"></div>
+        
+        <button type="submit" class="btn btn-primario" style="width: 100%;">Salvar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Menu Flutuante Admin -->
+  <button id="adminFloatTrigger" class="admin-float-trigger" style="display: none;">
+    <i class='bx bx-cog'></i>
+    <span class="badge" style="display: none;">0</span>
+  </button>
+  
+  <div id="adminFloatMenu" class="admin-float-menu">
+    <div class="admin-float-menu-header">
+      <i class='bx bx-shield-quarter'></i>
+      <h3>Painel Admin</h3>
+    </div>
+    <div class="admin-float-menu-items">
+      <a href="dashboard.html" class="admin-float-menu-item">
+        <i class='bx bx-bar-chart-square'></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="produtos-admin.html" class="admin-float-menu-item">
+        <i class='bx bx-package'></i>
+        <span>Produtos</span>
+      </a>
+      <a href="categorias-admin.html" class="admin-float-menu-item">
+        <i class='bx bx-category'></i>
+        <span>Categorias</span>
+      </a>
+      <a href="pedidos-admin.html" class="admin-float-menu-item">
+        <i class='bx bx-cart'></i>
+        <span>Pedidos</span>
+      </a>
+      <a href="#" class="admin-float-menu-item logout" onclick="fazerLogout(); return false;">
+        <i class='bx bx-log-out'></i>
+        <span>Sair</span>
+      </a>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/admin-menu.js"></script>
+  <script src="js/categorias-admin.js"></script>
+</body>
+</html>
+
+

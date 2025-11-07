@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produto - ShopVerse</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <style>
+    .produto-detalhe {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
+    
+    @media (max-width: 768px) {
+      .produto-detalhe {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 0 1rem;
+        margin: 1rem auto;
+      }
+      
+      .produto-galeria {
+        position: static;
+      }
+      
+      .produto-info-detalhe h1 {
+        font-size: 1.8rem;
+      }
+      
+      .produto-preco-grande {
+        font-size: 2rem;
+      }
+      
+      .quantidade-container {
+        flex-wrap: wrap;
+      }
+      
+      .btn-adicionar-carrinho {
+        width: 100%;
+        margin-top: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .produto-info-detalhe h1 {
+        font-size: 1.5rem;
+      }
+      
+      .produto-preco-grande {
+        font-size: 1.8rem;
+      }
+      
+      .quantidade-btn {
+        width: 45px;
+        height: 45px;
+      }
+      
+      .quantidade-input {
+        width: 70px;
+      }
+    }
+    .produto-galeria {
+      position: sticky;
+      top: 100px;
+    }
+    .galeria-principal {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+    
+    .produto-imagem-principal {
+      width: 100%;
+      border-radius: 10px;
+      cursor: zoom-in;
+      transition: transform 0.3s ease;
+    }
+    
+    .produto-imagem-principal:hover {
+      transform: scale(1.02);
+    }
+    
+    .zoom-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: var(--cor-primaria);
+      transition: var(--transicao);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .zoom-btn:hover {
+      background: white;
+      transform: scale(1.1);
+    }
+    
+    .galeria-thumbnails {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .thumbnail {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: var(--transicao);
+    }
+    
+    .thumbnail:hover,
+    .thumbnail.active {
+      border-color: var(--cor-secundaria);
+      transform: scale(1.05);
+    }
+    
+    .modal-zoom {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 5000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-zoom.active {
+      display: flex;
+    }
+    
+    .modal-zoom-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+    }
+    
+    .modal-zoom-content img {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 10px;
+    }
+    
+    .modal-zoom-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 2.5rem;
+      cursor: pointer;
+      transition: var(--transicao);
+    }
+    
+    .modal-zoom-close:hover {
+      transform: scale(1.2);
+    }
+    
+    .produto-preco-container {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+    
+    .produto-preco-antigo {
+      font-size: 1.5rem;
+      color: #999;
+      text-decoration: line-through;
+    }
+    
+    .badge-desconto {
+      background: var(--cor-secundaria);
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .produto-info-box {
+      background: var(--cor-fundo-claro);
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--cor-texto-escuro);
+    }
+    
+    .info-item i {
+      color: var(--cor-secundaria);
+      font-size: 1.3rem;
+    }
+    
+    .variacoes-container {
+      margin: 1.5rem 0;
+    }
+    
+    .variacao-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .variacao-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--cor-primaria);
+    }
+    
+    .variacao-options {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    
+    .variacao-option {
+      padding: 0.8rem 1.5rem;
+      border: 2px solid var(--cor-borda);
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: var(--transicao);
+      font-weight: 500;
+    }
+    
+    .variacao-option:hover {
+      border-color: var(--cor-secundaria);
+      color: var(--cor-secundaria);
+    }
+    
+    .variacao-option.selected {
+      background: var(--cor-secundaria);
+      color: white;
+      border-color: var(--cor-secundaria);
+    }
+    
+    .produto-cta {
+      display: flex;
+      gap: 1rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+    
+    .btn-cta-principal {
+      flex: 1;
+      min-width: 200px;
+      padding: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    .btn-cta-secundario {
+      flex: 1;
+      min-width: 200px;
+      padding: 1rem;
+      font-size: 1.1rem;
+      background: white;
+      color: var(--cor-primaria);
+      border: 2px solid var(--cor-primaria);
+    }
+    
+    .btn-cta-secundario:hover {
+      background: var(--cor-primaria);
+      color: white;
+    }
+    
+    .entrega-container {
+      background: white;
+      border: 2px solid var(--cor-borda);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .entrega-container h3 {
+      font-family: var(--fonte-titulo);
+      color: var(--cor-primaria);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .entrega-form {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .entrega-form input {
+      flex: 1;
+      padding: 0.8rem;
+      border: 2px solid var(--cor-borda);
+      border-radius: 8px;
+      font-family: var(--fonte-texto);
+    }
+    
+    .frete-resultado {
+      background: var(--cor-fundo-claro);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+    
+    .frete-info {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .especificacoes-container {
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: var(--cor-fundo-claro);
+      border-radius: 10px;
+    }
+    
+    .especificacoes-container h3 {
+      font-family: var(--fonte-titulo);
+      color: var(--cor-primaria);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .especificacoes-lista {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    
+    .especificacao-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--cor-borda);
+    }
+    
+    .especificacao-item:last-child {
+      border-bottom: none;
+    }
+    
+    .especificacao-label {
+      font-weight: 600;
+      color: var(--cor-primaria);
+    }
+    
+    .especificacao-valor {
+      color: #666;
+    }
+    
+    .form-avaliacao {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: var(--sombra);
+      margin-top: 2rem;
+    }
+    
+    .estrelas-seletor {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 2rem;
+      color: #ddd;
+      cursor: pointer;
+    }
+    
+    .estrelas-seletor i {
+      transition: var(--transicao);
+    }
+    
+    .estrelas-seletor i:hover,
+    .estrelas-seletor i.active {
+      color: #ffc107;
+    }
+    
+    .produtos-relacionados-section {
+      padding: 4rem 0;
+      background: var(--cor-fundo-claro);
+      margin-top: 4rem;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .produto-cta {
+        flex-direction: column;
+      }
+      
+      .btn-cta-primario,
+      .btn-cta-secundario {
+        width: 100%;
+      }
+      
+      .entrega-form {
+        flex-direction: column;
+      }
+      
+      .variacao-options {
+        justify-content: center;
+      }
+      
+      .produtos-relacionados-section {
+        padding: 2rem 0;
+      }
+      
+      .container {
+        padding: 0 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .galeria-thumbnails {
+        justify-content: center;
+      }
+      
+      .thumbnail {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .especificacoes-lista {
+        grid-template-columns: 1fr;
+      }
+    }
+    .produto-info-detalhe h1 {
+      font-family: var(--fonte-titulo);
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--cor-primaria);
+    }
+    .produto-preco-grande {
+      font-size: 2.5rem;
+      color: var(--cor-secundaria);
+      font-weight: 700;
+      margin: 1rem 0;
+    }
+    .produto-descricao {
+      margin: 2rem 0;
+      line-height: 1.8;
+      color: #666;
+    }
+    .quantidade-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .quantidade-btn {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--cor-borda);
+      background: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .quantidade-btn:hover {
+      border-color: var(--cor-secundaria);
+      color: var(--cor-secundaria);
+    }
+    .quantidade-input {
+      width: 80px;
+      padding: 0.8rem;
+      border: 2px solid var(--cor-borda);
+      border-radius: 5px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    .avaliacoes-section {
+      margin-top: 3rem;
+      padding-top: 3rem;
+      border-top: 2px solid var(--cor-borda);
+    }
+    .avaliacao-item {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      box-shadow: var(--sombra);
+    }
+    .avaliacao-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .avaliacao-nome {
+      font-weight: 600;
+      color: var(--cor-primaria);
+    }
+    .avaliacao-data {
+      font-size: 0.9rem;
+      color: #999;
+    }
+    @media (max-width: 768px) {
+      .produto-detalhe {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <i class='bx bxs-shopping-bag'></i>
+        <span>ShopVerse</span>
+      </a>
+      
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li id="linkDashboard" style="display: none;"><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+      </nav>
+      
+      <div class="header-actions">
+        <button class="btn-carrinho" onclick="window.location.href='carrinho.html'">
+          <i class='bx bx-cart'></i>
+          <span class="carrinho-badge" id="carrinhoBadge">0</span>
+        </button>
+        
+        <span id="usuarioInfo" style="display: none; margin-right: 1rem;"></span>
+        <button id="btnLogin" class="btn btn-secundario" onclick="abrirModalLogin()">Login</button>
+        <button id="btnLogout" class="btn btn-secundario" onclick="fazerLogout()" style="display: none;">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Produto Detalhe -->
+  <div id="loading" style="text-align: center; padding: 3rem;">
+    <p style="font-size: 1.2rem;">Carregando produto...</p>
+  </div>
+  
+  <div id="produtoContainer" style="display: none;">
+    <div class="produto-detalhe">
+      <div class="produto-galeria">
+        <div class="galeria-principal">
+          <img id="produtoImagem" src="" alt="" class="produto-imagem-principal" onclick="abrirZoom()">
+          <button class="zoom-btn" onclick="abrirZoom()" title="Ver em tamanho maior">
+            <i class='bx bx-zoom-in'></i>
+          </button>
+        </div>
+        <div class="galeria-thumbnails" id="galeriaThumbnails">
+          <!-- Thumbnails serão adicionados via JS -->
+        </div>
+      </div>
+      
+      <div class="produto-info-detalhe">
+        <div id="produtoCategoria" class="produto-categoria"></div>
+        <h1 id="produtoNome"></h1>
+        <div id="produtoAvaliacaoMedia"></div>
+        <div class="produto-preco-container">
+          <div id="produtoPreco" class="produto-preco-grande"></div>
+          <div id="produtoPrecoAntigo" class="produto-preco-antigo" style="display: none;"></div>
+          <span id="produtoDesconto" class="badge-desconto" style="display: none;"></span>
+        </div>
+        
+        <div class="produto-info-box">
+          <div class="info-item">
+            <i class='bx bx-check-circle'></i>
+            <span>Produto em estoque</span>
+          </div>
+          <div class="info-item">
+            <i class='bx bx-truck'></i>
+            <span>Frete grátis acima de R$ 199</span>
+          </div>
+          <div class="info-item">
+            <i class='bx bx-shield-quarter'></i>
+            <span>Garantia de 30 dias</span>
+          </div>
+        </div>
+        
+        <div class="variacoes-container" id="variacoesContainer">
+          <!-- Variações serão adicionadas via JS se necessário -->
+        </div>
+        
+        <div class="quantidade-container">
+          <label><strong>Quantidade:</strong></label>
+          <button class="quantidade-btn" onclick="alterarQuantidade(-1)">-</button>
+          <input type="number" id="quantidadeProduto" class="quantidade-input" value="1" min="1" readonly>
+          <button class="quantidade-btn" onclick="alterarQuantidade(1)">+</button>
+        </div>
+        
+        <div class="produto-cta">
+          <button class="btn btn-primario btn-cta-principal" onclick="adicionarAoCarrinhoProduto()">
+            <i class='bx bx-cart'></i> Adicionar ao Carrinho
+          </button>
+          <button class="btn btn-secundario btn-cta-secundario" onclick="comprarAgora()">
+            <i class='bx bx-credit-card'></i> Comprar Agora
+          </button>
+        </div>
+        
+        <!-- Informações de Entrega -->
+        <div class="entrega-container">
+          <h3><i class='bx bx-map'></i> Calcular Frete</h3>
+          <div class="entrega-form">
+            <input type="text" id="cepEntrega" placeholder="Digite seu CEP" maxlength="9">
+            <button class="btn btn-secundario" onclick="calcularFrete()">Calcular</button>
+          </div>
+          <div id="freteResultado" class="frete-resultado" style="display: none;"></div>
+          <p class="frete-info">
+            <i class='bx bx-info-circle'></i>
+            Frete grátis para compras acima de R$ 199,90. Entrega em 5-7 dias úteis.
+          </p>
+        </div>
+        
+        <!-- Especificações -->
+        <div class="especificacoes-container">
+          <h3><i class='bx bx-list-ul'></i> Especificações</h3>
+          <div id="especificacoesLista" class="especificacoes-lista">
+            <!-- Especificações serão adicionadas via JS -->
+          </div>
+        </div>
+        
+        <div class="avaliacoes-section" id="avaliacoesSection">
+          <h2 style="font-family: var(--fonte-titulo); margin-bottom: 1.5rem;">
+            <i class='bx bx-star'></i> Avaliações e Comentários
+          </h2>
+          <div id="avaliacoesLista"></div>
+          
+          <div id="formAvaliacao" class="form-avaliacao" style="display: none;">
+            <h3>Deixe sua avaliação</h3>
+            <div class="form-group">
+              <label>Nota</label>
+              <div class="estrelas-seletor" id="estrelasSeletor">
+                <i class='bx bx-star' data-nota="1"></i>
+                <i class='bx bx-star' data-nota="2"></i>
+                <i class='bx bx-star' data-nota="3"></i>
+                <i class='bx bx-star' data-nota="4"></i>
+                <i class='bx bx-star' data-nota="5"></i>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Comentário</label>
+              <textarea id="avaliacaoComentario" placeholder="Compartilhe sua experiência com este produto..." rows="4"></textarea>
+            </div>
+            <button class="btn btn-primario" onclick="enviarAvaliacao()">
+              <i class='bx bx-send'></i> Enviar Avaliação
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Produtos Relacionados -->
+    <section class="produtos-relacionados-section">
+      <div class="container">
+        <h2 class="section-title">Produtos Relacionados</h2>
+        <div class="produtos-grid" id="produtosRelacionadosGrid">
+          <!-- Produtos serão carregados aqui -->
+        </div>
+      </div>
+    </section>
+  </div>
+  
+  <!-- Modal Zoom -->
+  <div id="modalZoom" class="modal-zoom">
+    <div class="modal-zoom-content">
+      <button class="modal-zoom-close" onclick="fecharZoom()">&times;</button>
+      <img id="zoomImagem" src="" alt="">
+    </div>
+  </div>
+
+  <!-- Modal Login -->
+  <div id="modalLogin" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Login</h2>
+        <button class="btn-fechar" id="fecharLogin">&times;</button>
+      </div>
+      <form id="formLogin">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="loginSenha">Senha</label>
+          <input type="password" id="loginSenha" required>
+        </div>
+        <div class="erro-mensagem" id="loginErro"></div>
+        <button type="submit" class="btn btn-primario" style="width: 100%;">Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script>
+    let produtoAtual = null;
+    let quantidadeAtual = 1;
+
+    // Carregar produto
+    async function carregarProduto() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const produtoId = urlParams.get('id');
+      
+      if (!produtoId) {
+        window.location.href = 'produtos.html';
+        return;
+      }
+      
+      try {
+        produtoAtual = await api.produtos.buscarPorId(produtoId);
+        
+        // Preencher informações
+        document.getElementById('produtoNome').textContent = produtoAtual.nome;
+        document.getElementById('produtoCategoria').textContent = produtoAtual.categoria.nome;
+        document.getElementById('produtoPreco').textContent = formatarPreco(produtoAtual.preco);
+        document.getElementById('produtoDescricao').textContent = produtoAtual.descricao;
+        document.getElementById('produtoImagem').src = produtoAtual.imagem;
+        document.getElementById('produtoImagem').alt = produtoAtual.nome;
+        
+        // Avaliação média
+        if (produtoAtual.mediaAvaliacoes > 0) {
+          document.getElementById('produtoAvaliacaoMedia').innerHTML = `
+            <div class="produto-avaliacao">
+              ${obterEstrelasHTML(produtoAtual.mediaAvaliacoes)}
+              <span>${produtoAtual.mediaAvaliacoes.toFixed(1)} (${produtoAtual.totalAvaliacoes} avaliações)</span>
+            </div>
+          `;
+        }
+        
+        // Adicionar thumbnail da imagem principal
+        adicionarThumbnail(produtoAtual.imagem);
+        
+        // Criar variações de exemplo (tamanho)
+        criarVariacoes();
+        
+        // Criar especificações
+        criarEspecificacoes();
+        
+        // Carregar avaliações
+        await carregarAvaliacoes();
+        
+        // Carregar produtos relacionados
+        await carregarProdutosRelacionados();
+        
+        // Mostrar container
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('produtoContainer').style.display = 'block';
+        
+        // Verificar se usuário está logado para mostrar formulário
+        const { autenticado } = verificarAutenticacao();
+        const formAvaliacao = document.getElementById('formAvaliacao');
+        if (formAvaliacao) {
+          formAvaliacao.style.display = autenticado ? 'block' : 'none';
+        }
+        
+        // Inicializar seletor de estrelas
+        inicializarEstrelasSeletor();
+        
+      } catch (error) {
+        console.error('Erro ao carregar produto:', error);
+        document.getElementById('loading').innerHTML = '<p style="color: var(--cor-erro);">Erro ao carregar produto.</p>';
+      }
+    }
+
+    // Carregar avaliações
+    async function carregarAvaliacoes() {
+      try {
+        const avaliacoes = await api.avaliacoes.listarPorProduto(produtoAtual.id);
+        const lista = document.getElementById('avaliacoesLista');
+        
+        if (avaliacoes.length === 0) {
+          lista.innerHTML = '<p>Nenhuma avaliação ainda. Seja o primeiro a avaliar!</p>';
+          return;
+        }
+        
+        lista.innerHTML = avaliacoes.map(av => `
+          <div class="avaliacao-item">
+            <div class="avaliacao-header">
+              <span class="avaliacao-nome">${av.usuario.nome}</span>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                ${obterEstrelasHTML(av.nota)}
+                <span class="avaliacao-data">${formatarData(av.createdAt)}</span>
+              </div>
+            </div>
+            ${av.comentario ? `<p style="margin-top: 0.5rem;">${av.comentario}</p>` : ''}
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Erro ao carregar avaliações:', error);
+      }
+    }
+
+    // Alterar quantidade
+    function alterarQuantidade(delta) {
+      const input = document.getElementById('quantidadeProduto');
+      const novaQuantidade = parseInt(input.value) + delta;
+      if (novaQuantidade >= 1) {
+        input.value = novaQuantidade;
+        quantidadeAtual = novaQuantidade;
+      }
+    }
+
+    // Adicionar ao carrinho
+    async function adicionarAoCarrinhoProduto() {
+      if (!produtoAtual) return;
+      
+      const quantidade = parseInt(document.getElementById('quantidadeProduto').value);
+      await adicionarAoCarrinho(produtoAtual.id, quantidade);
+    }
+
+    // Adicionar thumbnail
+    function adicionarThumbnail(src) {
+      const container = document.getElementById('galeriaThumbnails');
+      const thumbnail = document.createElement('img');
+      thumbnail.src = src;
+      thumbnail.className = 'thumbnail active';
+      thumbnail.onclick = () => {
+        document.getElementById('produtoImagem').src = src;
+        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+        thumbnail.classList.add('active');
+      };
+      container.appendChild(thumbnail);
+    }
+    
+    // Criar variações
+    function criarVariacoes() {
+      const container = document.getElementById('variacoesContainer');
+      container.innerHTML = `
+        <div class="variacao-group">
+          <label>Tamanho</label>
+          <div class="variacao-options">
+            <span class="variacao-option" onclick="selecionarVariacao(this, 'tamanho')">P</span>
+            <span class="variacao-option selected" onclick="selecionarVariacao(this, 'tamanho')">M</span>
+            <span class="variacao-option" onclick="selecionarVariacao(this, 'tamanho')">G</span>
+            <span class="variacao-option" onclick="selecionarVariacao(this, 'tamanho')">GG</span>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Selecionar variação
+    function selecionarVariacao(elemento, tipo) {
+      const opcoes = elemento.parentElement.querySelectorAll('.variacao-option');
+      opcoes.forEach(opt => opt.classList.remove('selected'));
+      elemento.classList.add('selected');
+    }
+    
+    // Criar especificações
+    function criarEspecificacoes() {
+      const lista = document.getElementById('especificacoesLista');
+      const especificacoes = [
+        { label: 'Marca', valor: 'ShopVerse' },
+        { label: 'Modelo', valor: produtoAtual.nome.split(' ')[0] || 'N/A' },
+        { label: 'Categoria', valor: produtoAtual.categoria.nome },
+        { label: 'Disponibilidade', valor: produtoAtual.estoque > 0 ? 'Em estoque' : 'Indisponível' },
+        { label: 'Garantia', valor: '30 dias' },
+        { label: 'SKU', valor: `SV-${produtoAtual.id}` }
+      ];
+      
+      lista.innerHTML = especificacoes.map(esp => `
+        <div class="especificacao-item">
+          <span class="especificacao-label">${esp.label}:</span>
+          <span class="especificacao-valor">${esp.valor}</span>
+        </div>
+      `).join('');
+    }
+    
+    // Calcular frete
+    async function calcularFrete() {
+      const cep = document.getElementById('cepEntrega').value.replace(/\D/g, '');
+      if (cep.length !== 8) {
+        mostrarToast('CEP inválido', 'erro');
+        return;
+      }
+      
+      // Simulação de cálculo de frete
+      const resultado = document.getElementById('freteResultado');
+      resultado.style.display = 'block';
+      resultado.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong>PAC</strong>
+            <p style="margin: 0.5rem 0 0 0; color: #666;">Entrega em 5-7 dias úteis</p>
+          </div>
+          <strong style="color: var(--cor-secundaria);">R$ 15,90</strong>
+        </div>
+      `;
+    }
+    
+    // Comprar agora
+    async function comprarAgora() {
+      await adicionarAoCarrinhoProduto();
+      setTimeout(() => {
+        window.location.href = 'checkout.html';
+      }, 500);
+    }
+    
+    // Zoom
+    function abrirZoom() {
+      const modal = document.getElementById('modalZoom');
+      const img = document.getElementById('zoomImagem');
+      img.src = document.getElementById('produtoImagem').src;
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function fecharZoom() {
+      const modal = document.getElementById('modalZoom');
+      modal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+    
+    // Inicializar seletor de estrelas
+    function inicializarEstrelasSeletor() {
+      const estrelas = document.querySelectorAll('#estrelasSeletor i');
+      let notaSelecionada = 5;
+      
+      estrelas.forEach((estrela, index) => {
+        estrela.addEventListener('click', () => {
+          notaSelecionada = index + 1;
+          estrelas.forEach((e, i) => {
+            if (i < notaSelecionada) {
+              e.classList.add('active');
+              e.classList.remove('bx-star');
+              e.classList.add('bxs-star');
+            } else {
+              e.classList.remove('active');
+              e.classList.remove('bxs-star');
+              e.classList.add('bx-star');
+            }
+          });
+        });
+        
+        estrela.addEventListener('mouseenter', () => {
+          estrelas.forEach((e, i) => {
+            if (i <= index) {
+              e.style.color = '#ffc107';
+            } else {
+              e.style.color = '#ddd';
+            }
+          });
+        });
+      });
+      
+      document.getElementById('estrelasSeletor').addEventListener('mouseleave', () => {
+        estrelas.forEach((e, i) => {
+          if (i < notaSelecionada) {
+            e.style.color = '#ffc107';
+          } else {
+            e.style.color = '#ddd';
+          }
+        });
+      });
+      
+      // Salvar função para uso no enviarAvaliacao
+      window.notaSelecionada = () => notaSelecionada;
+    }
+    
+    // Carregar produtos relacionados
+    async function carregarProdutosRelacionados() {
+      try {
+        const produtos = await api.produtos.listar({ categoria: produtoAtual.categoriaId });
+        const relacionados = produtos.filter(p => p.id !== produtoAtual.id).slice(0, 4);
+        const grid = document.getElementById('produtosRelacionadosGrid');
+        
+        if (relacionados.length === 0) {
+          grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Nenhum produto relacionado encontrado.</p>';
+          return;
+        }
+        
+        grid.innerHTML = relacionados.map(produto => `
+          <div class="produto-card" onclick="window.location.href='produto.html?id=${produto.id}'">
+            <img src="${produto.imagem}" alt="${produto.nome}" class="produto-imagem">
+            <div class="produto-info">
+              <div class="produto-categoria">${produto.categoria.nome}</div>
+              <h3 class="produto-nome">${produto.nome}</h3>
+              <div class="produto-preco">${formatarPreco(produto.preco)}</div>
+              <button class="btn-adicionar-carrinho" onclick="event.stopPropagation(); adicionarAoCarrinho(${produto.id})">
+                <i class='bx bx-cart'></i> Adicionar
+              </button>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Erro ao carregar produtos relacionados:', error);
+      }
+    }
+    
+    // Enviar avaliação
+    async function enviarAvaliacao() {
+      const { autenticado } = verificarAutenticacao();
+      
+      if (!autenticado) {
+        mostrarToast('Faça login para avaliar produtos', 'aviso');
+        abrirModalLogin();
+        return;
+      }
+      
+      const nota = window.notaSelecionada ? window.notaSelecionada() : 5;
+      const comentario = document.getElementById('avaliacaoComentario').value;
+      
+      try {
+        await api.avaliacoes.criar({
+          produtoId: produtoAtual.id,
+          nota: parseInt(nota),
+          comentario: comentario
+        });
+        
+        mostrarToast('Avaliação enviada com sucesso!', 'sucesso');
+        
+        // Limpar formulário
+        document.getElementById('avaliacaoComentario').value = '';
+        inicializarEstrelasSeletor();
+        
+        // Recarregar avaliações e produto
+        await carregarProduto();
+      } catch (error) {
+        mostrarToast(error.message || 'Erro ao enviar avaliação', 'erro');
+      }
+    }
+    
+    // Fechar modal zoom ao clicar fora
+    document.getElementById('modalZoom')?.addEventListener('click', (e) => {
+      if (e.target.id === 'modalZoom') {
+        fecharZoom();
+      }
+    });
+    
+    // Máscara CEP
+    document.getElementById('cepEntrega')?.addEventListener('input', (e) => {
+      let valor = e.target.value.replace(/\D/g, '');
+      if (valor.length > 5) {
+        valor = valor.substring(0, 5) + '-' + valor.substring(5, 8);
+      }
+      e.target.value = valor;
+    });
+
+    // Inicializar
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', carregarProduto);
+    } else {
+      carregarProduto();
+    }
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,31 @@
+/* Estilos específicos para modais de login e cadastro */
+.modal {
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-50px) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  box-shadow: 0 0 0 3px rgba(242, 107, 56, 0.1);
+}
+
+.btn-primario:active {
+  transform: scale(0.98);
+}
+
+

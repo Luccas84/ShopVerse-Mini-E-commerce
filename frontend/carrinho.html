@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho - ShopVerse</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <style>
+    .carrinho-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .carrinho-container {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+        gap: 1.5rem;
+      }
+      
+      .carrinho-item {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .carrinho-item-imagem {
+        width: 100%;
+        max-width: 200px;
+        height: auto;
+        margin: 0 auto;
+      }
+      
+      .carrinho-resumo {
+        position: static;
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .carrinho-item {
+        padding: 1rem 0;
+      }
+      
+      .carrinho-item-nome {
+        font-size: 1rem;
+      }
+      
+      .carrinho-item-preco {
+        font-size: 1.1rem;
+      }
+    }
+    .carrinho-itens {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: var(--sombra);
+    }
+    .carrinho-item {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--cor-borda);
+    }
+    .carrinho-item:last-child {
+      border-bottom: none;
+    }
+    .carrinho-item-imagem {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    .carrinho-item-info {
+      flex: 1;
+    }
+    .carrinho-item-nome {
+      font-family: var(--fonte-titulo);
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .carrinho-item-preco {
+      color: var(--cor-secundaria);
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    .carrinho-item-controles {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .btn-remover {
+      background: var(--cor-erro);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: var(--transicao);
+    }
+    .btn-remover:hover {
+      background: #d32f2f;
+    }
+    .carrinho-resumo {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: var(--sombra);
+      position: sticky;
+      top: 100px;
+      height: fit-content;
+    }
+    .resumo-linha {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .resumo-total {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--cor-secundaria);
+      border-top: 2px solid var(--cor-borda);
+      padding-top: 1rem;
+      margin-top: 1rem;
+    }
+    .carrinho-vazio {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .carrinho-vazio i {
+      font-size: 5rem;
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 968px) {
+      .carrinho-container {
+        grid-template-columns: 1fr;
+      }
+      .carrinho-resumo {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <i class='bx bxs-shopping-bag'></i>
+        <span>ShopVerse</span>
+      </a>
+      
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+        </ul>
+      </nav>
+      
+      <div class="header-actions">
+        <button class="btn-carrinho" onclick="window.location.href='carrinho.html'">
+          <i class='bx bx-cart'></i>
+          <span class="carrinho-badge" id="carrinhoBadge">0</span>
+        </button>
+        
+        <span id="usuarioInfo" style="display: none; margin-right: 1rem;"></span>
+        <button id="btnLogin" class="btn btn-secundario" onclick="abrirModalLogin()">Login</button>
+        <button id="btnLogout" class="btn btn-secundario" onclick="fazerLogout()" style="display: none;">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Carrinho -->
+  <div class="carrinho-container">
+    <div class="carrinho-itens">
+      <h2 style="font-family: var(--fonte-titulo); margin-bottom: 1.5rem;">Meu Carrinho</h2>
+      
+      <div id="carrinhoItens">
+        <!-- Itens serão carregados aqui -->
+      </div>
+      
+      <div id="carrinhoVazio" class="carrinho-vazio" style="display: none;">
+        <i class='bx bx-cart'></i>
+        <h3>Seu carrinho está vazio</h3>
+        <p style="color: #999; margin: 1rem 0;">Adicione produtos para continuar comprando</p>
+        <a href="produtos.html" class="btn btn-primario">Ver Produtos</a>
+      </div>
+    </div>
+    
+    <div class="carrinho-resumo">
+      <h3 style="font-family: var(--fonte-titulo); margin-bottom: 1.5rem;">Resumo do Pedido</h3>
+      
+      <div class="resumo-linha">
+        <span>Subtotal:</span>
+        <span id="subtotal">R$ 0,00</span>
+      </div>
+      
+      <div class="resumo-linha">
+        <span>Frete:</span>
+        <span id="frete">Grátis</span>
+      </div>
+      
+      <div class="resumo-linha resumo-total">
+        <span>Total:</span>
+        <span id="total">R$ 0,00</span>
+      </div>
+      
+      <button class="btn btn-primario" style="width: 100%; padding: 1rem; margin-top: 1.5rem;" onclick="irParaCheckout()">
+        Finalizar Compra
+      </button>
+      
+      <a href="produtos.html" style="display: block; text-align: center; margin-top: 1rem; color: var(--cor-secundaria);">
+        Continuar Comprando
+      </a>
+    </div>
+  </div>
+
+  <!-- Modal Login -->
+  <div id="modalLogin" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Login</h2>
+        <button class="btn-fechar" id="fecharLogin">&times;</button>
+      </div>
+      <form id="formLogin">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="loginSenha">Senha</label>
+          <input type="password" id="loginSenha" required>
+        </div>
+        <div class="erro-mensagem" id="loginErro"></div>
+        <button type="submit" class="btn btn-primario" style="width: 100%;">Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script>
+    function renderizarCarrinho() {
+      const carrinho = obterCarrinho();
+      const container = document.getElementById('carrinhoItens');
+      const vazio = document.getElementById('carrinhoVazio');
+      
+      if (carrinho.length === 0) {
+        if (container) container.style.display = 'none';
+        if (vazio) vazio.style.display = 'block';
+        atualizarResumo([]);
+        return;
+      }
+      
+      if (container) container.style.display = 'block';
+      if (vazio) vazio.style.display = 'none';
+      
+      container.innerHTML = carrinho.map(item => `
+        <div class="carrinho-item">
+          <img src="${item.imagem}" alt="${item.nome}" class="carrinho-item-imagem">
+          <div class="carrinho-item-info">
+            <div class="carrinho-item-nome">${item.nome}</div>
+            <div class="carrinho-item-preco">${formatarPreco(item.preco)}</div>
+            <div class="carrinho-item-controles">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <button class="quantidade-btn" onclick="atualizarQuantidadeCarrinho(${item.produtoId}, ${item.quantidade - 1})">-</button>
+                <span style="font-weight: 600; min-width: 30px; text-align: center;">${item.quantidade}</span>
+                <button class="quantidade-btn" onclick="atualizarQuantidadeCarrinho(${item.produtoId}, ${item.quantidade + 1})">+</button>
+              </div>
+              <span style="font-weight: 600; color: var(--cor-secundaria);">
+                ${formatarPreco(item.preco * item.quantidade)}
+              </span>
+              <button class="btn-remover" onclick="removerDoCarrinho(${item.produtoId})">
+                <i class='bx bx-trash'></i> Remover
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+      atualizarResumo(carrinho);
+    }
+
+    function atualizarResumo(carrinho) {
+      const subtotal = carrinho.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
+      const total = subtotal;
+      
+      const subtotalEl = document.getElementById('subtotal');
+      const totalEl = document.getElementById('total');
+      
+      if (subtotalEl) subtotalEl.textContent = formatarPreco(subtotal);
+      if (totalEl) totalEl.textContent = formatarPreco(total);
+      
+      // Frete grátis acima de R$ 199,90
+      const freteEl = document.getElementById('frete');
+      if (freteEl) {
+        if (subtotal >= 199.90) {
+          freteEl.textContent = 'Grátis';
+          freteEl.style.color = 'var(--cor-sucesso)';
+        } else {
+          const restante = 199.90 - subtotal;
+          freteEl.textContent = `Faltam ${formatarPreco(restante)} para frete grátis`;
+          freteEl.style.color = '#999';
+        }
+      }
+    }
+
+    function irParaCheckout() {
+      const carrinho = obterCarrinho();
+      
+      if (carrinho.length === 0) {
+        mostrarToast('Adicione produtos ao carrinho', 'aviso');
+        return;
+      }
+      
+      const { autenticado } = verificarAutenticacao();
+      
+      if (!autenticado) {
+        mostrarToast('Faça login para finalizar a compra', 'aviso');
+        abrirModalLogin();
+        return;
+      }
+      
+      window.location.href = 'checkout.html';
+    }
+
+    // Carregar carrinho
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', renderizarCarrinho);
+    } else {
+      renderizarCarrinho();
+    }
+
+    // Atualizar quando carrinho mudar
+    window.addEventListener('carrinhoAtualizado', renderizarCarrinho);
+  </script>
+</body>
+</html>
+
+
