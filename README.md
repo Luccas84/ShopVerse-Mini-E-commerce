@@ -1,10 +1,10 @@
 # 🛍️ ShopVerse - Mini E-commerce Profissional
 
-<div align="center">
+# Meu Projeto
 
-![ShopVerse Logo](https://img.shields.io/badge/ShopVerse-E-commerce-blue?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Produção-green?style=for-the-badge)
-![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge)
+Bem-vindo ao meu projeto!
+
+![Logo do Projeto](https://github.com/Luccas84/Sistema-de-Agendamentos/blob/main/Projeto_17.png)
 
 **Um e-commerce completo e profissional, inspirado no Mercado Livre e Tray, com design moderno, responsivo e focado em conversão.**
 
